@@ -1,0 +1,46 @@
+import time
+from scapy.all import sniff, IP
+import yagmail
+
+# Configuration parameters
+THRESHOLD = 100  # Max requests per time window
+TIME_WINDOW = 10  # Time window in seconds
+
+# Initialize an empty dictionary to store IP request logs
+ip_request_log = {}
+
+# Uncomment and set up email notifications
+yag = yagmail.SMTP('your_email@gmail.com', 'your_app_password')  # Your email setup
+
+def detect_ddos(packet):
+    if IP in packet:
+        ip = packet[IP].src
+        current_time = time.time()
+
+        if ip not in ip_request_log:
+            ip_request_log[ip] = []
+
+        # Keep only the requests within the time window
+        ip_request_log[ip] = [t for t in ip_request_log[ip] if current_time - t < TIME_WINDOW]
+        ip_request_log[ip].append(current_time)
+
+        count = len(ip_request_log[ip])
+        if count > THRESHOLD:
+            alert = f"🚨 DDoS ALERT: IP {ip} made {count} requests in {TIME_WINDOW} seconds!"
+            print(alert)
+
+           # In the detect_ddos function, where you're logging the alerts
+try:
+    with open("alerts.log", "a", encoding="utf-8") as f:
+        f.write(alert + "\n")
+    print(alert)  # Optionally print the alert in the console
+except Exception as e:
+    print(f"[!] Failed to log/send alert: {e}")
+
+
+def main():
+    print("[*] Starting real-time DDoS detection...")
+    sniff(filter="ip", prn=detect_ddos, store=0)
+
+if __name__ == "__main__":
+    main()
