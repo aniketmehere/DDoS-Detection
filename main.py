@@ -3,7 +3,7 @@ from scapy.all import *
 import time
 import json
 from datetime import datetime
-import winsound  # ✅ Added for sound alert
+import winsound  #  Added for sound alert
 
 # Set a threshold and time window for DDoS detection
 THRESHOLD = 100  # Example threshold: 100 requests
@@ -11,7 +11,7 @@ TIME_WINDOW = 10  # 10 seconds
 
 ip_request_log = {}
 
-# ✅ Sound function
+#  Sound function
 def play_alert_sound():
     winsound.Beep(1000, 500)  # Frequency: 1000Hz, Duration: 500ms
 
@@ -63,10 +63,10 @@ def detect_ddos(pkt):
         
         # Check if the number of requests exceeds the threshold
         if len(ip_request_log[ip_src]) > THRESHOLD:
-            alert = f"🚨 DDoS ALERT: IP {ip_src} made {len(ip_request_log[ip_src])} requests in {TIME_WINDOW} seconds!"
+            alert = f" DDoS ALERT: IP {ip_src} made {len(ip_request_log[ip_src])} requests in {TIME_WINDOW} seconds!"
             print(alert)  # Printing to console
 
-            # ✅ Play sound on alert
+            #  Play sound on alert
             play_alert_sound()
 
             # Try to log to file
